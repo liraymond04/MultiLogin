@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core.command.argument;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -18,6 +20,11 @@ import moe.caa.multilogin.core.command.UniversalCommandExceptionType;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.database.table.UserDataTableV3;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,9 +54,53 @@ public class OnlineArgumentType implements ArgumentType<OnlineArgumentType.Onlin
         reader.skip();
         String nameOrUuid = StringArgumentType.readString(reader);
 
+        UUID uuid = ValueUtil.getUuidOrNull(nameOrUuid);
+
+        // fetch UUID from Mojang API
+        if (uuid == null && serviceConfig.getMojangApi().getApiUrl() != null && serviceConfig.getMojangApi().toString() != null) {
+            try {
+//                System.out.println("Start try... " + serviceConfig.getMojangApi().getUsernameToUUIDRequest(nameOrUuid));
+                URL urlForGetRequest = new URL(serviceConfig.getMojangApi().getUsernameToUUIDRequest(nameOrUuid));
+                String readLine;
+                HttpURLConnection connection = (HttpURLConnection) urlForGetRequest.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("id", "name");
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    while ((readLine = in.readLine()) != null) {
+                        response.append(readLine);
+                    } in.close();
+
+                    JsonObject _response = new Gson().fromJson(response.toString(), JsonObject.class);
+                    
+                    UUID _uuid = ValueUtil.getUuidOrNull(_response.get("id").getAsString());
+                    String _name = _response.get("name").getAsString();
+
+//                    System.out.println("Got uuid: " + _response.get("id").getAsString());
+                    UserDataTableV3 dataTable = CommandHandler.getCore().getSqlManager().getUserDataTable();
+//                    System.out.println("Has user data: " + dataTable.dataExists(_uuid, serviceConfig.getId()));
+                    boolean whitelist = dataTable.hasWhitelist(_uuid, serviceConfig.getId());
+
+                    return new OnlineArgument(serviceConfig, _uuid, _name, _uuid, whitelist);
+                } else {
+                    // HTTP response not good
+                }
+            } catch (MalformedURLException e) {
+                // Incorrect/no Mojang API url provided
+            } catch (Exception e) {
+                // TODO - throw exception for fail to fetch UUID
+//                System.out.println(e);
+                throw CommandHandler.getBuiltInExceptions().dispatcherUnknownCommand().createWithContext(reader);
+            }
+        }
+
+        // previous implementation (lookup saved UUIDs)
         UserDataTableV3 dataTable = CommandHandler.getCore().getSqlManager().getUserDataTable();
 
-        UUID uuid = ValueUtil.getUuidOrNull(nameOrUuid);
         if (uuid == null) {
             uuid = dataTable.getOnlineUUID(nameOrUuid, serviceConfig.getId());
             if (uuid == null) {

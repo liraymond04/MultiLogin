@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.configuration.service.yggdrasil;
 
 import moe.caa.multilogin.core.configuration.ConfException;
+import moe.caa.multilogin.core.configuration.MojangApiConfig;
 import moe.caa.multilogin.core.configuration.ProxyConfig;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 import moe.caa.multilogin.core.configuration.service.ServiceType;
@@ -14,8 +15,8 @@ public class CustomYggdrasilServiceConfig extends BaseYggdrasilServiceConfig {
     private final String trackIpContent;
     private final HttpRequestMethod method;
 
-    public CustomYggdrasilServiceConfig(int id, String name, InitUUID initUUID, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy, String url, String postContent, String trackIpContent, HttpRequestMethod method) throws ConfException {
-        super(id, name, initUUID, whitelist, skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+    public CustomYggdrasilServiceConfig(int id, String name, InitUUID initUUID, boolean whitelist, SkinRestorerConfig skinRestorer, MojangApiConfig mojangApi, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy, String url, String postContent, String trackIpContent, HttpRequestMethod method) throws ConfException {
+        super(id, name, initUUID, whitelist, skinRestorer, mojangApi, trackIp, timeout, retry, retryDelay, authProxy);
         this.url = url;
         this.postContent = postContent;
         this.trackIpContent = trackIpContent;

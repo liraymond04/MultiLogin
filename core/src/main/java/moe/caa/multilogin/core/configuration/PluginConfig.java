@@ -198,6 +198,7 @@ public class PluginConfig {
         BaseServiceConfig.InitUUID initUUID = load.node("initUUID").get(BaseServiceConfig.InitUUID.class, BaseServiceConfig.InitUUID.DEFAULT);
         boolean whitelist = load.node("whitelist").getBoolean(false);
         SkinRestorerConfig skinRestorer = SkinRestorerConfig.read(load.node("skinRestorer"));
+        MojangApiConfig mojangApi = MojangApiConfig.read(load.node("mojangApi"));
 
         if (serviceType.isYggdrasilService()) {
             CommentedConfigurationNode yggdrasilAuthNode = load.node("yggdrasilAuth");
@@ -208,15 +209,16 @@ public class PluginConfig {
             ProxyConfig authProxy = ProxyConfig.read(yggdrasilAuthNode.node("authProxy"));
 
             if (serviceType == ServiceType.OFFICIAL) {
+                MojangApiConfig _mojangApi = new MojangApiConfig("https://api.mojang.com/", "users/profiles/minecraft/");
                 return new OfficialYggdrasilServiceConfig(id, name,
                         initUUID, whitelist,
-                        skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+                        skinRestorer, _mojangApi, trackIp, timeout, retry, retryDelay, authProxy);
             }
 
             if (serviceType == ServiceType.BLESSING_SKIN) {
                 return new BlessingSkinYggdrasilServiceConfig(id, name,
                         initUUID, whitelist,
-                        skinRestorer, trackIp, timeout, retry, retryDelay, authProxy,
+                        skinRestorer, mojangApi, trackIp, timeout, retry, retryDelay, authProxy,
                         yggdrasilAuthNode.node("blessingSkin").node("apiRoot").getString());
             }
 
@@ -228,13 +230,13 @@ public class PluginConfig {
                 String postContent = customNode.node("postContent").getString();
 
                 return new CustomYggdrasilServiceConfig(id, name, initUUID, whitelist,
-                        skinRestorer, trackIp, timeout, retry, retryDelay,
+                        skinRestorer, mojangApi, trackIp, timeout, retry, retryDelay,
                         authProxy, url, postContent, trackIpContent, method);
             }
         }
 
         if (serviceType == ServiceType.FLOODGATE) {
-            return new FloodgateServiceConfig(id, name, initUUID, whitelist, skinRestorer);
+            return new FloodgateServiceConfig(id, name, initUUID, whitelist, skinRestorer, mojangApi);
         }
 
         throw new ConfException("Unknown service type " + serviceType.name());

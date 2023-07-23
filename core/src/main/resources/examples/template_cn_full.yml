@@ -199,6 +199,18 @@ initUUID: 'DEFAULT'
 # 默认值 ‘false’
 whitelist: false
 
+# Configuration for implementations of the Mojang Minecraft API
+# This API is used to query for UUIDs from usernames
+#
+# If an incorrect/no API is provided, then whitelist specific add/remove will default to checking already saved UUIDs
+mojangApi:
+
+  # The base API url
+  apiUrl: "https://authserver.ely.by/"
+
+  # API path for the username to UUID get request
+  usernameToUUIDPath: "api/users/profiles/minecraft/"
+
 # 皮肤修复设定。
 skinRestorer:
 

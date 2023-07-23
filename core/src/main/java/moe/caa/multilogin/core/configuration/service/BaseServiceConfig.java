@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.configuration.service;
 
 import lombok.Getter;
 import moe.caa.multilogin.core.configuration.ConfException;
+import moe.caa.multilogin.core.configuration.MojangApiConfig;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 
 import java.nio.charset.StandardCharsets;
@@ -15,14 +16,16 @@ public abstract class BaseServiceConfig {
     private final InitUUID initUUID;
     private final boolean whitelist;
     private final SkinRestorerConfig skinRestorer;
+    private final MojangApiConfig mojangApi;
 
     protected BaseServiceConfig(int id, String name, InitUUID initUUID,
-                                boolean whitelist, SkinRestorerConfig skinRestorer) throws ConfException {
+                                boolean whitelist, SkinRestorerConfig skinRestorer, MojangApiConfig mojangApi) throws ConfException {
         this.id = id;
         this.name = name;
         this.initUUID = initUUID;
         this.whitelist = whitelist;
         this.skinRestorer = skinRestorer;
+        this.mojangApi = mojangApi;
 
         checkValid();
     }

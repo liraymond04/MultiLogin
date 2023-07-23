@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.configuration.service.yggdrasil;
 
 import moe.caa.multilogin.core.configuration.ConfException;
+import moe.caa.multilogin.core.configuration.MojangApiConfig;
 import moe.caa.multilogin.core.configuration.ProxyConfig;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 import moe.caa.multilogin.core.configuration.service.ServiceType;
@@ -11,8 +12,8 @@ import moe.caa.multilogin.core.configuration.service.ServiceType;
 public class BlessingSkinYggdrasilServiceConfig extends BaseYggdrasilServiceConfig {
     private final String apiRoot;
 
-    public BlessingSkinYggdrasilServiceConfig(int id, String name, InitUUID initUUID, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy, String apiRoot) throws ConfException {
-        super(id, name, initUUID, whitelist, skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+    public BlessingSkinYggdrasilServiceConfig(int id, String name, InitUUID initUUID, boolean whitelist, SkinRestorerConfig skinRestorer, MojangApiConfig mojangApi, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy, String apiRoot) throws ConfException {
+        super(id, name, initUUID, whitelist, skinRestorer, mojangApi, trackIp, timeout, retry, retryDelay, authProxy);
         if (!apiRoot.endsWith("/")) {
             apiRoot = apiRoot.concat("/");
         }
