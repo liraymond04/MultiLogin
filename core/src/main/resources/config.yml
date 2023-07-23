@@ -52,6 +52,22 @@ nameAllowedRegular: '^[0-9a-zA-Z_]{3,16}$'
 # 默认值 true
 nameCorrect: true
 
+# Force add identifiers for auth servers to username
+# For example, Steven authenticated from LittleSkin will have the username [L]Steven
+#
+# Default value false
+nameAppendAuthServer: false
+
+# Require identifier for official auth server
+#
+# Default value false
+nameShowOfficialServer: false
+
+# Service id of official auth server
+#
+# Default value -1
+nameOfficialServer: -1
+
 # 当在线档案改名后是否自动 erase 老的档案用户名称并且分配在线档案用户名给当前档案使用（不忽略重名检查）
 #
 # 默认值 true

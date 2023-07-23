@@ -75,11 +75,21 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
 
         String fixName = loginName;
         if (core.getPluginConfig().isNameCorrect()) {
-            int i = 0;
             boolean modified = false;
-            while (core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(fixName) != null) {
-                fixName = loginName + ++i;
-                modified = true;
+            if (core.getPluginConfig().isNameAppendAuthServer()) {
+                int id = validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId();
+                boolean isOfficialServer = id == core.getPluginConfig().getNameOfficialServer();
+                boolean nameOfficialServer = core.getPluginConfig().isNameShowOfficialServer() && isOfficialServer;
+                if (nameOfficialServer || !isOfficialServer) {
+                    fixName = String.format("[%s]%s",validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getName().charAt(0), loginName);
+                    modified = true;
+                }
+            } else {
+                int i = 0;
+                while (core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(fixName) != null) {
+                    fixName = loginName + ++i;
+                    modified = true;
+                }
             }
             if(modified){
                 UUID finalInGameUUID = inGameUUID;

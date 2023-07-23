@@ -42,6 +42,12 @@ public class PluginConfig {
     @Getter
     private boolean nameCorrect;
     @Getter
+    private boolean nameAppendAuthServer;
+    @Getter
+    private boolean nameShowOfficialServer;
+    @Getter
+    private int nameOfficialServer;
+    @Getter
     private boolean checkUpdate;
     @Getter
     private boolean floodgateSupport;
@@ -100,6 +106,9 @@ public class PluginConfig {
         floodgateSupport = configConfigurationNode.node("floodgateSupport").getBoolean(false);
         welcomeMsg = configConfigurationNode.node("welcomeMsg").getBoolean(true);
         nameCorrect = configConfigurationNode.node("nameCorrect").getBoolean(true);
+        nameAppendAuthServer = configConfigurationNode.node("nameAppendAuthServer").getBoolean(false);
+        nameShowOfficialServer = configConfigurationNode.node("nameShowOfficialServer").getBoolean(false);
+        nameOfficialServer = configConfigurationNode.node("nameOfficialServer").getInt(-1);
         autoNameChange = configConfigurationNode.node("autoNameChange").getBoolean(true);
 
         Map<Integer, BaseServiceConfig> idMap = new HashMap<>();
