@@ -17,6 +17,7 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_SPECIFIC_ADD = "command.multilogin.whitelist.specific.add";
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_SPECIFIC_REMOVE = "command.multilogin.whitelist.specific.remove";
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_SPECIFIC_LIST = "command.multilogin.whitelist.specific.list";
+    public static final String COMMAND_MULTI_LOGIN_WHITELIST_COPY = "command.multilogin.whitelist.copy";
     public static final String COMMAND_MULTILOGIN_RENAME_ONESELF = "command.multilogin.rename.oneself";
     public static final String COMMAND_MULTILOGIN_RENAME_OTHER = "command.multilogin.rename.other";
     public static final String COMMAND_MULTI_LOGIN_ERASE_ALL_USERNAMES = "command.multilogin.eraseallusernames";

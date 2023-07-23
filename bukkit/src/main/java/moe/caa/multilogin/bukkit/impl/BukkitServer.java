@@ -4,12 +4,19 @@ import moe.caa.multilogin.api.plugin.BaseScheduler;
 import moe.caa.multilogin.api.plugin.IPlayerManager;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.plugin.IServer;
+import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
+import org.bukkit.OfflinePlayer;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class BukkitServer implements IServer {
     private final MultiLoginBukkit multiLoginBukkit;
     private final BaseScheduler bkScheduler;
     private final BukkitPlayerManager playerManager;
+    private final Set<Pair<UUID, String>> whitelist;
 
     public BukkitServer(MultiLoginBukkit multiLoginBukkit) {
         this.multiLoginBukkit = multiLoginBukkit;
@@ -20,6 +27,10 @@ public class BukkitServer implements IServer {
             }
         };
         playerManager = new BukkitPlayerManager(multiLoginBukkit.getServer());
+        whitelist = new HashSet<>();
+        for (OfflinePlayer player : multiLoginBukkit.getServer().getWhitelistedPlayers()) {
+            whitelist.add(new Pair<>(player.getUniqueId(), player.getName()));
+        }
     }
 
     @Override
@@ -30,6 +41,11 @@ public class BukkitServer implements IServer {
     @Override
     public IPlayerManager getPlayerManager() {
         return playerManager;
+    }
+
+    @Override
+    public Set<Pair<UUID, String>> getWhitelist() {
+        return whitelist;
     }
 
     @Override

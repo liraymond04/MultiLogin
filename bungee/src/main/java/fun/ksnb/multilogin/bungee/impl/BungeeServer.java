@@ -4,9 +4,13 @@ import moe.caa.multilogin.api.plugin.BaseScheduler;
 import moe.caa.multilogin.api.plugin.IPlayerManager;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.plugin.IServer;
+import moe.caa.multilogin.api.util.Pair;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.conf.Configuration;
+
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * 代表Bungee 服务器
@@ -30,6 +34,12 @@ public class BungeeServer implements IServer {
     @Override
     public IPlayerManager getPlayerManager() {
         return playerManager;
+    }
+
+    // TODO
+    @Override
+    public Set<Pair<UUID, String>> getWhitelist() {
+        return null;
     }
 
     @Override

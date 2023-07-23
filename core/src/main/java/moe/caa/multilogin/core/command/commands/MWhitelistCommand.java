@@ -12,6 +12,7 @@ import moe.caa.multilogin.core.command.argument.OnlineArgumentType;
 import moe.caa.multilogin.core.command.argument.ServiceIdArgumentType;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
+import moe.caa.multilogin.core.database.table.UserDataTableV3;
 
 import java.util.Locale;
 import java.util.Set;
@@ -61,6 +62,11 @@ public class MWhitelistCommand {
                                 .then(handler.argument("serviceid", ServiceIdArgumentType.service())
                                         .executes(this::executeList)
                                 )
+                        )
+                ).then(handler.literal("copy")
+                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_COPY))
+                        .then(handler.argument("serviceid", ServiceIdArgumentType.service())
+                                .executes((this::executeCopy))
                         )
                 );
     }
@@ -198,6 +204,40 @@ public class MWhitelistCommand {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_list",
                     new Pair<>("online_uuid", player.getValue1()),
                     new Pair<>("online_name", player.getValue2()),
+                    new Pair<>("service_name", serviceConfig.getName()),
+                    new Pair<>("service_id", serviceConfig.getId())
+            ));
+        }
+        return 0;
+    }
+
+    // /Multilogin whitelist copy <serviceid>
+    @SneakyThrows
+    private int executeCopy(CommandContext<ISender> context) {
+        BaseServiceConfig serviceConfig = ServiceIdArgumentType.getService(context, "serviceid");
+        Set<Pair<UUID, String>> players = CommandHandler.getCore().getPlugin().getRunServer().getWhitelist();;
+
+        UserDataTableV3 dataTable = CommandHandler.getCore().getSqlManager().getUserDataTable();
+
+        for (Pair<UUID, String> player : players) {
+            UUID uuid = player.getValue1();
+            String name = player.getValue2();
+            if (!dataTable.dataExists(uuid, serviceConfig.getId())) {
+                dataTable.insertNewData(uuid, serviceConfig.getId(), name, null);
+            }
+            if (dataTable.hasWhitelist(uuid, serviceConfig.getId())) {
+                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add_repeat",
+                        new Pair<>("online_uuid", uuid),
+                        new Pair<>("online_name", name),
+                        new Pair<>("service_name", serviceConfig.getName()),
+                        new Pair<>("service_id", serviceConfig.getId())
+                ));
+                continue;
+            }
+            CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(uuid, serviceConfig.getId(), true);
+            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add",
+                    new Pair<>("online_uuid", uuid),
+                    new Pair<>("online_name", name),
                     new Pair<>("service_name", serviceConfig.getName()),
                     new Pair<>("service_id", serviceConfig.getId())
             ));

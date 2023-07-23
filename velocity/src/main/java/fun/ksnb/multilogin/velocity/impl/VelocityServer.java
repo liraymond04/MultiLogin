@@ -8,6 +8,10 @@ import moe.caa.multilogin.api.plugin.BaseScheduler;
 import moe.caa.multilogin.api.plugin.IPlayerManager;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.plugin.IServer;
+import moe.caa.multilogin.api.util.Pair;
+
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Velocity 服务器对象
@@ -31,6 +35,12 @@ public class VelocityServer implements IServer {
     @Override
     public IPlayerManager getPlayerManager() {
         return playerManager;
+    }
+
+    // TODO
+    @Override
+    public Set<Pair<UUID, String>> getWhitelist() {
+        return null;
     }
 
     @Override

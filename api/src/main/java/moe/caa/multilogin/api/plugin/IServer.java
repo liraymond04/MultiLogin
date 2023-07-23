@@ -1,5 +1,10 @@
 package moe.caa.multilogin.api.plugin;
 
+import moe.caa.multilogin.api.util.Pair;
+
+import java.util.Set;
+import java.util.UUID;
+
 public interface IServer {
 
     /**
@@ -15,6 +20,13 @@ public interface IServer {
      * @return 获得玩家管理器
      */
     IPlayerManager getPlayerManager();
+
+    /**
+     * Get native whitelist
+     *
+     * @return set of players
+     */
+    Set<Pair<UUID, String>> getWhitelist();
 
     /**
      * 是否开启在线验证
