@@ -9,9 +9,12 @@ import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.OnlineArgumentType;
+import moe.caa.multilogin.core.command.argument.ServiceIdArgumentType;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -52,6 +55,12 @@ public class MWhitelistCommand {
                                         .executes(this::executeRemove)
                                 )
 
+                        )
+                        .then(handler.literal("list")
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_SPECIFIC_LIST))
+                                .then(handler.argument("serviceid", ServiceIdArgumentType.service())
+                                        .executes(this::executeList)
+                                )
                         )
                 );
     }
@@ -98,7 +107,7 @@ public class MWhitelistCommand {
             return 0;
         }
         if (!CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(online.getOnlineUUID(), online.getBaseServiceConfig().getId())) {
-            CommandHandler.getCore().getSqlManager().getUserDataTable().insertNewData(online.getOnlineUUID(), online.getBaseServiceConfig().getId(), null, null);
+            CommandHandler.getCore().getSqlManager().getUserDataTable().insertNewData(online.getOnlineUUID(), online.getBaseServiceConfig().getId(), online.getOnlineName(), null);
         }
         CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(online.getOnlineUUID(), online.getBaseServiceConfig().getId(), true);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add",
@@ -169,6 +178,30 @@ public class MWhitelistCommand {
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add",
                 new Pair<>("name", username)
         ));
+        return 0;
+    }
+
+    // /Multilogin whitelist specific list <serviceid>
+    @SneakyThrows
+    private int executeList(CommandContext<ISender> context) {
+        BaseServiceConfig serviceConfig = ServiceIdArgumentType.getService(context, "serviceid");
+
+        Set<Pair<UUID, String>> players = CommandHandler.getCore().getSqlManager().getUserDataTable().getWhitelist(serviceConfig.getId());
+        if (players.size() == 0) {
+            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_list_none",
+                    new Pair<>("service_name", serviceConfig.getName()),
+                    new Pair<>("service_id", serviceConfig.getId())
+            ));
+            return 0;
+        }
+        for (Pair<UUID, String> player : players) {
+            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_list",
+                    new Pair<>("online_uuid", player.getValue1()),
+                    new Pair<>("online_name", player.getValue2()),
+                    new Pair<>("service_name", serviceConfig.getName()),
+                    new Pair<>("service_id", serviceConfig.getId())
+            ));
+        }
         return 0;
     }
 }

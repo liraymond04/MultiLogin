@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.database.table;
 
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.There;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.database.SQLManager;
@@ -299,6 +300,35 @@ public class UserDataTableV3 {
             }
             return statement.executeUpdate();
         }
+    }
+
+    /**
+     * Get all players in whitelist
+     *
+     * @param serviceId service Id
+     */
+    public Set<Pair<UUID, String>> getWhitelist(int serviceId) throws SQLException {
+        Set<Pair<UUID, String>> result = new HashSet<>();
+        String sql = String.format(
+                "SELECT %s, %s FROM %s WHERE %s = ? AND %s = ?"
+                , fieldOnlineUUID, fieldOnlineName, tableName, fieldWhitelist, fieldServiceId
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBoolean(1, true);
+            statement.setInt(2, serviceId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Pair<UUID, String> player = new Pair<>(
+                            ValueUtil.bytesToUuid(resultSet.getBytes(1)),
+                            resultSet.getString(2)
+                    );
+                    result.add(player);
+                }
+            }
+        }
+        return Collections.unmodifiableSet(result);
     }
 
     /**
